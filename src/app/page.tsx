@@ -18,9 +18,7 @@ export default function HomePage() {
     if (token) setIsAuth(true);
   }, []);
 
-  if (!isAuth) {
-    return <Auth setIsAuth={setIsAuth} />;
-  }
+  if (!isAuth) return <Auth setIsAuth={setIsAuth} />;
 
   return (
     <div className="p-6">
@@ -41,7 +39,7 @@ export default function HomePage() {
           </button>
         </div>
       ) : (
-        <ChatUI />
+        <ChatUI room={room} />
       )}
     </div>
   );

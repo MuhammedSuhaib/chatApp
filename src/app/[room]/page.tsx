@@ -5,5 +5,5 @@ type Props = {
 };
 
 export default function RoomPage({ params }: Props) {
-  return <ChatUI />;
+  return <ChatUI room={params.room} />;
 }
