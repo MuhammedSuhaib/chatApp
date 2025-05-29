@@ -1,57 +1,48 @@
-'use client';
-import React, { useState } from 'react';
+"use client";
 
-export default function Home() {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+import { useEffect, useState } from "react";
+import Cookies from "universal-cookie";
+import { SignOutBtn } from "@/components/SignOutBtn";
+import { Auth } from "@/components/Auth";
+import ChatUI from "@/components/ChatUI";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-    setMessages([...messages, input]);
-    setInput('');
-  };
+const cookies = new Cookies();
+
+export default function HomePage() {
+  const [isAuth, setIsAuth] = useState(false);
+  const [isInChat, setIsInChat] = useState(false);
+  const [room, setRoom] = useState("");
+
+  useEffect(() => {
+    const token = cookies.get("auth-token");
+    if (token) setIsAuth(true);
+  }, []);
+
+  if (!isAuth) {
+    return <Auth setIsAuth={setIsAuth} />;
+  }
 
   return (
-    <div className="max-w-sm mx-auto px-4 space-y-4 dark:text-white text-black">
-      <div className="text-xl font-bold dark:text-white">Welcome to: CyberDevs</div>
-      <div className="space-y-2 rounded p-4 h-100 shadow-sm shadow-neutral-900 dark:shadow-sm dark:shadow-neutral-50">
-        <ul>
-          {messages.map((msg, i) => (
-            <li className='text-black dark:text-white' key={i}>{msg}</li>
-          ))}
-        </ul>
-      </div>
-      <form onSubmit={handleSubmit} className="flex">
-        <input
-          type="text"
-          placeholder="Type your message here..."
-          value={input}//* to get the value of input Add value and onChange
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-grow  p-2 rounded text-black dark:text-white"
-        />
-        <button type="submit" className="px-4 py-2 bg-[#20e07d] rounded">
-          Send
-        </button>
-      </form>
+    <div className="p-6">
+      <SignOutBtn setIsAuth={setIsAuth} />
+      {!isInChat ? (
+        <div className="flex flex-col items-center space-y-4">
+          <label className="text-lg">Type room name:</label>
+          <input
+            onChange={(e) => setRoom(e.target.value)}
+            className="border p-2 rounded"
+            placeholder="Enter room name"
+          />
+          <button
+            onClick={() => setIsInChat(true)}
+            className="px-4 py-2 bg-blue-500 rounded"
+          >
+            Enter Chat
+          </button>
+        </div>
+      ) : (
+        <ChatUI />
+      )}
     </div>
   );
 }
-
-
-// ? HOw to TAke userInput in PURe HTml ????
-/**
-<form onsubmit="handleSubmit(event)">
-  <input type="text" id="userInput" placeholder="Type your message here..." />
-  <button type="submit">Send</button>
-</form>
-
-<script>
-  function handleSubmit(event) {
-    event.preventDefault(); //!using dom       ⬇
-    const input = document.getElementById('userInput').value;
-    console.log(input); // or do anything with the input
-  }
-</script>
-
- */
