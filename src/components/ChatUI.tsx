@@ -32,15 +32,15 @@ export default function ChatUI({ room }: { room: string }) {
     // Ref for scrolling to the latest message
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-    // Reference to the Firestore messages collection
-    const messagesRef = collection(db, "messages");
+    // Reference to the Firestore messages subcollection for the current room
+    const messagesRef = collection(db, "rooms", room, "messages");
     // State for editing message
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState("");
 
     // Delete a message by id
     const deleteMessage = async (id: string) => {
-        await deleteDoc(doc(db, "messages", id));
+        await deleteDoc(doc(db, "rooms", room, "messages", id));
     };
 
     // Start editing a message
@@ -52,7 +52,7 @@ export default function ChatUI({ room }: { room: string }) {
     // Save the edited message
     const saveEdit = async () => {
         if (!editingId || !editingText.trim()) return;
-        await updateDoc(doc(db, "messages", editingId), { text: editingText });
+        await updateDoc(doc(db, "rooms", room, "messages", editingId), { text: editingText });
         setEditingId(null);
         setEditingText("");
     };
@@ -67,7 +67,6 @@ export default function ChatUI({ room }: { room: string }) {
     useEffect(() => {
         const q = query(
             messagesRef,
-            where("room", "==", room),
             orderBy("createdAt")
         );
 

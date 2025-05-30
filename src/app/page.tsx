@@ -41,6 +41,13 @@ export default function HomePage() {
       ) : (
         <ChatUI room={room} />
       )}
+
+      <div>
+        <h2 className="text-lg">Active Rooms:</h2>
+        <ul>
+          <li>{room}</li>
+        </ul>
+      </div>
     </div>
   );
 }
