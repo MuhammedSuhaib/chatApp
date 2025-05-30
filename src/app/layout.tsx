@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/Theme-provider"
-import { ModeToggle } from "@/components/ShadcnMode"
 import { AuthWrapper } from "@/components/AuthWrapper";
+import { UserMenu } from "@/components/avatar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,16 +28,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-sm mx-auto px-4 space-y-4 dark:text-white text-black`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:text-white text-black`}
       >
         <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <ModeToggle/>
-          <AuthWrapper>{children}</AuthWrapper>
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="max-w-sm mx-auto px-4 space-y-4">
+            <div className="flex justify-end pt-4 pr-2">
+              <UserMenu />
+            </div>
+            <AuthWrapper>{children}</AuthWrapper>
+          </div>
         </ThemeProvider>
       </body>
     </html>

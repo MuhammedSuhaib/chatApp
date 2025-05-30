@@ -8,30 +8,29 @@ export default function RoomsPage() {
     const [joinedRooms, setJoinedRooms] = useState<string[]>([]);
     const router = useRouter();
 
-    // Load saved rooms from localStorage on mount
+    // Load rooms on mount (only on client)
     useEffect(() => {
-        const saved = localStorage.getItem("joinedRooms");
-        if (saved) {
-            setJoinedRooms(JSON.parse(saved));
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("joinedRooms");
+            if (saved) {
+                setJoinedRooms(JSON.parse(saved));
+            }
         }
     }, []);
-
-    // Save rooms to localStorage whenever list changes
-    useEffect(() => {
-        localStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
-    }, [joinedRooms]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const trimmed = room.trim();
         if (!trimmed) return;
 
-        // Save locally if not already joined
+        // Update local state and localStorage
         if (!joinedRooms.includes(trimmed)) {
-            setJoinedRooms((prev) => [...prev, trimmed]);
+            const updated = [...joinedRooms, trimmed];
+            setJoinedRooms(updated);
+            localStorage.setItem("joinedRooms", JSON.stringify(updated));
         }
 
-        // Navigate
+        // Navigate to room
         router.push(`/rooms/${trimmed}`);
         setRoom("");
     };
@@ -45,7 +44,7 @@ export default function RoomsPage() {
                     value={room}
                     onChange={(e) => setRoom(e.target.value)}
                     placeholder="Enter room name"
-                    className="border p-2 rounded text-black"
+                    className="border p-2 rounded text-black dark:text-white"
                 />
                 <button type="submit" className="bg-blue-500 px-4 py-2 rounded text-white">
                     Join Room
