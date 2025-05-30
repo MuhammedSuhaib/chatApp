@@ -17,9 +17,7 @@ import {
 
 // ChatUI component for displaying and managing chat messages in a room
 export default function ChatUI({ room }: { room: string }) {
-    // State for input field
     const [input, setInput] = useState("");
-    // State for messages array
     const [messages, setMessages] = useState<
         {
             id: string;
