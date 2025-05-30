@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/Theme-provider"
 import { AuthWrapper } from "@/components/AuthWrapper";
 import { UserMenu } from "@/components/avatar";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,9 +39,11 @@ export default function RootLayout({
         >
           <div className="max-w-sm mx-auto space-y-4">
             <div className="flex justify-around items-center-safe">
-                <span className="flex flex-wrap justify-center text-2xl font-bold tracking-wide text-center leading-tight">
-                &lt;<span className="text-1xl text-purple-400">ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰</span>/&gt;
-            </span>
+              <Link href="/" >
+              <span className="flex flex-wrap justify-center text-2xl font-bold tracking-wide text-center leading-tight">
+                  &lt;<span className="text-1xl text-purple-400">ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰</span>/&gt;
+              </span>
+              </Link>
               <UserMenu />
             </div>
             <AuthWrapper>{children}</AuthWrapper>

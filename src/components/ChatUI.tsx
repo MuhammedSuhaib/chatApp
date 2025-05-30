@@ -13,7 +13,6 @@ import {
     orderBy,
     query,
     serverTimestamp,
-    where,
     doc,
     deleteDoc,
     updateDoc,
@@ -140,7 +139,7 @@ export default function ChatUI({ room }: { room: string }) {
                                 />
                             )}
                             <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
-                                <div className="flex justify-between items-center mb-1">
+                                <div className="flex justify-center gap-3 items-center mb-1">
                                     <span className="font-semibold text-sm">{msg.displayName}</span>
                                     {isMine && !isEditing && (
                                         <Popover>
