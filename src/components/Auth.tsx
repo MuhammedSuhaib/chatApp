@@ -14,9 +14,23 @@ export const Auth = ({ setIsAuth }: { setIsAuth: (val: boolean) => void }) => {
     };
 
     return (
-        <div>
-            <p>Sign in with Google</p>
-            <button onClick={signInWithGoogle}>Sign In</button>
+        <div className="min-h-screen flex flex-col justify-center items-center-safe bg-[#111827] text-white shadow-2xl shadow-black gap-6 p-4">
+            <p className="text-base sm:text-lg">Welcome to</p>
+            <h1 className="flex flex-wrap justify-center text-3xl sm:text-4xl font-bold tracking-wide text-center leading-tight">
+                &lt;<span className="text-3xl sm:text-5xl text-purple-400">ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰</span>/&gt;
+            </h1>
+            <button
+                onClick={signInWithGoogle}
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium hover:scale-105 transition-transform"
+            >
+                <img
+                    src="/google-icon.png"
+                    alt="Google"
+                    className="w-5 h-5"
+                />
+                Continue with Google
+            </button>
         </div>
+
     );
 };
