@@ -1,5 +1,9 @@
 "use client";
-
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { useEffect, useRef, useState } from "react";
 import { db, auth } from "@/lib/firebase";
 import {
@@ -14,6 +18,7 @@ import {
     deleteDoc,
     updateDoc,
 } from "firebase/firestore";
+import Image from "next/image";
 
 // ChatUI component for displaying and managing chat messages in a room
 export default function ChatUI({ room }: { room: string }) {
@@ -111,96 +116,120 @@ export default function ChatUI({ room }: { room: string }) {
     };
 
     return (
-        <div className="p-4">
+        <div className="p-6 max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-white/20">
             {/* Room title */}
-            <div className="text-xl font-bold mb-4 dark:text-white">
-                Welcome to room: {room}
+            <div className="text-2xl font-extrabold mb-6 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
+                Room: <span className="text-[#20e07d]">{room}</span>
             </div>
 
             {/* Messages list */}
-            <div className="space-y-2 rounded p-4 h-96 overflow-y-auto shadow dark:shadow-white bg-white dark:bg-neutral-900">
+            <div className="space-y-4 p-4 h-96 overflow-y-auto rounded-lg shadow-inner bg-gray-50 dark:bg-amber-600">
                 {messages.map((msg) => {
-                    // Check if the message belongs to the current user
                     const isMine = auth.currentUser && msg.userId === auth.currentUser.uid;
-                    // Check if this message is being edited
                     const isEditing = editingId === msg.id;
                     return (
                         <div
                             key={msg.id}
-                            className="flex items-start space-x-2 text-black dark:text-white"
+                            className={`flex items-end space-x-2 text-gray-900 dark:text-gray-100 ${isMine ? "justify-end" : "justify-start"}`}
                         >
-                            {/* User avatar */}
-                            {msg.photoURL && (
+                            {!isMine && msg.photoURL && (
                                 <img
                                     src={msg.photoURL}
                                     alt="avatar"
-                                    className="w-8 h-8 rounded-full"
+                                    className="size-6 rounded-full border-2 border-[#20e07d]"
                                 />
                             )}
-                            <div>
-                                {/* Display name */}
-                                <div className="text-sm font-semibold">{msg.displayName}</div>
-                                <div>
-                                    {/* Edit mode */}
-                                    {isEditing ? (
-                                        <>
-                                            <input
-                                                className="w-full p-1 text-black rounded"
-                                                value={editingText}
-                                                placeholder="Edit your message..."
-                                                onChange={(e) => setEditingText(e.target.value)}
-                                            />
-                                            <div className="flex space-x-2 mt-1">
-                                                <button onClick={saveEdit} className="text-green-600 text-sm">Save</button>
-                                                <button onClick={cancelEdit} className="text-gray-400 text-sm">Cancel</button>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            {/* Message text */}
-                                            <div>{msg.text}</div>
-                                            {/* Edit/Delete buttons for own messages */}
-                                            {isMine && (
-                                                <div className="flex space-x-2 mt-1">
-                                                    <button onClick={() => startEditing(msg.id, msg.text)} className="text-blue-500 text-xs">Edit</button>
-                                                    <button onClick={() => deleteMessage(msg.id)} className="text-red-500 text-xs">Delete</button>
-                                                </div>
-                                            )}
-                                        </>
+                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="font-semibold text-sm">{msg.displayName}</span>
+                                    {isMine && !isEditing && (
+                                        <Popover>
+                                            <PopoverTrigger>
+                                                {isMine && msg.photoURL && (
+                                                    <img
+                                                        src={msg.photoURL}
+                                                        alt="avatar"
+                                                        className="size-6 rounded-full border-2 border-[#20e07d]"
+                                                    />
+                                                )}
+                                            </PopoverTrigger>
+                                            <PopoverContent className="size-fit">
+                                                <button
+                                                    onClick={() => startEditing(msg.id, msg.text)}
+                                                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteMessage(msg.id)}
+                                                    className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </PopoverContent>
+                                        </Popover>
                                     )}
                                 </div>
-                                {/* Timestamp */}
-                                {msg.createdAt && (
-                                    <div className="text-xs text-gray-500">
-                                        {msg.createdAt.toLocaleTimeString()}
-                                    </div>
+
+                                {isEditing ? (
+                                    <>
+                                        <input
+                                            className="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d]"
+                                            value={editingText}
+                                            placeholder="Edit your message..."
+                                            onChange={(e) => setEditingText(e.target.value)}
+                                        />
+                                        <div className="flex space-x-3 mt-2 justify-end text-sm">
+                                            <button onClick={saveEdit} className="text-green-600 hover:underline font-semibold">
+                                                Save
+                                            </button>
+                                            <button onClick={cancelEdit} className="text-gray-400 hover:underline font-semibold">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>
+                                        <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            {msg.createdAt?.toLocaleTimeString()}
+                                        </span>
+                                    </>
                                 )}
                             </div>
                         </div>
                     );
                 })}
-                {/* Dummy div for scroll-to-bottom */}
                 <div ref={messagesEndRef} />
             </div>
-
             {/* Message input form */}
-            <form onSubmit={handleSubmit} className="flex mt-4">
+            <form onSubmit={handleSubmit} className="flex mt-6 gap-3">
+                {/* type msg*/}
                 <input
                     type="text"
                     disabled={!!editingId}
-                    placeholder="Type your message..."
+                    placeholder="      Type your message..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-grow p-2 rounded text-black dark:text-white"
+                    className="flex-grow size-xs rounded-4xl border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d] "
                 />
+                {/* send button ⇗ */}
                 <button
                     type="submit"
                     disabled={!!editingId}
-                    className="ml-2 px-4 py-2 bg-[#20e07d] rounded text-white"
+                    aria-label="Send"
+                    title="Send"
                 >
-                    Send
+                    <Image
+                        src="/send.png"
+                        width={512}
+                        height={512}
+                        alt="send"
+                        className="size-7 pointer-events-none"
+                    />
                 </button>
             </form>
-        </div >
+        </div>
+
     );
 }

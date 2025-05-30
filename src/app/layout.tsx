@@ -36,7 +36,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="max-w-sm mx-auto px-4 space-y-4">
+          <div className="max-w-sm mx-auto space-y-4">
             <div className="flex justify-around items-center-safe">
                 <span className="flex flex-wrap justify-center text-2xl font-bold tracking-wide text-center leading-tight">
                 &lt;<span className="text-1xl text-purple-400">ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰</span>/&gt;
