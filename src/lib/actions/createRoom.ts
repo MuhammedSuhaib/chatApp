@@ -7,4 +7,4 @@ export async function createRoom(name: string, userId: string) {
         createdBy: userId,
         createdAt: serverTimestamp(),
     });
-}
+} 
