@@ -133,7 +133,7 @@ export default function ChatUI({ room }: { room: string }) {
                             key={msg.id}
                             className={`flex items-end space-x-2 text-gray-900 dark:text-gray-100 ${isMine ? "justify-end" : "justify-start"}`}
                         >
-                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ?   "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
+                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
                                 <div className="flex justify-center gap-3 items-center mb-1">
                                     <span className="font-semibold text-sm">{msg.displayName}</span>
                                     {!isMine && msg.photoURL && (
@@ -204,32 +204,32 @@ export default function ChatUI({ room }: { room: string }) {
                 <div ref={messagesEndRef} />
             </div>
             {/* Message input form */}
-            <form onSubmit={handleSubmit} className="flex mt-6 gap-3">
-                {/* type msg*/}
+            <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-4 w-full">
                 <input
                     type="text"
                     disabled={!!editingId}
-                    placeholder="      Type your message..."
+                    placeholder="Type a message..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-grow size-xs rounded-4xl border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d] "
+                    className="flex-grow text-sm px-3 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d] min-w-0"
                 />
-                {/* send button ⇗ */}
                 <button
                     type="submit"
                     disabled={!!editingId}
                     aria-label="Send"
                     title="Send"
+                    className="flex-shrink-0 p-1 rounded-full"
                 >
                     <Image
                         src="/send.png"
-                        width={512}
-                        height={512}
+                        width={24}
+                        height={24}
                         alt="send"
-                        className="size-7 pointer-events-none"
+                        className="w-6 h-6 object-contain"
                     />
                 </button>
             </form>
+
         </div>
 
     );
