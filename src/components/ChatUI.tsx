@@ -122,7 +122,9 @@ export default function ChatUI({ room }: { room: string }) {
             </div>
 
             {/* Messages list */}
-            <div className="space-y-4 p-4 h-96 overflow-y-auto rounded-lg shadow-inner bg-gray-50 dark:bg-amber-600">
+            <div className="space-y-4 p-4 h-96 overflow-y-auto rounded-lg shadow-inner bg-[radial-gradient(circle_at_center,_#ffffff,_#e5e7eb)] dark:bg-[radial-gradient(circle_at_center,_#1a1441,_#0d0c1d)] dark:text-white">
+
+
                 {messages.map((msg) => {
                     const isMine = auth.currentUser && msg.userId === auth.currentUser.uid;
                     const isEditing = editingId === msg.id;
@@ -131,16 +133,16 @@ export default function ChatUI({ room }: { room: string }) {
                             key={msg.id}
                             className={`flex items-end space-x-2 text-gray-900 dark:text-gray-100 ${isMine ? "justify-end" : "justify-start"}`}
                         >
-                            {!isMine && msg.photoURL && (
-                                <img
-                                    src={msg.photoURL}
-                                    alt="avatar"
-                                    className="size-6 rounded-full border-2 border-[#20e07d]"
-                                />
-                            )}
-                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
+                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ?   "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
                                 <div className="flex justify-center gap-3 items-center mb-1">
                                     <span className="font-semibold text-sm">{msg.displayName}</span>
+                                    {!isMine && msg.photoURL && (
+                                        <img
+                                            src={msg.photoURL}
+                                            alt="avatar"
+                                            className="size-6 rounded-full shadow-md shadow-[#208ae0]"
+                                        />
+                                    )}
                                     {isMine && !isEditing && (
                                         <Popover>
                                             <PopoverTrigger>
@@ -148,7 +150,7 @@ export default function ChatUI({ room }: { room: string }) {
                                                     <img
                                                         src={msg.photoURL}
                                                         alt="avatar"
-                                                        className="size-6 rounded-full border-2 border-[#20e07d]"
+                                                        className="size-6 rounded-full shadow-md shadow-[#208ae0]"
                                                     />
                                                 )}
                                             </PopoverTrigger>
