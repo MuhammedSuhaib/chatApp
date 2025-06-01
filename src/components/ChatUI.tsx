@@ -17,7 +17,8 @@ import {
     deleteDoc,
     updateDoc,
 } from "firebase/firestore";
-import Image from "next/image";
+import { Send } from "lucide-react"
+
 
 // ChatUI component for displaying and managing chat messages in a room
 export default function ChatUI({ room }: { room: string }) {
@@ -115,9 +116,9 @@ export default function ChatUI({ room }: { room: string }) {
     };
 
     return (
-        <div className="p-6 max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-white/20">
+        <div className="px-3 py-6 sm:p-6 max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-white/20">
             {/* Room title */}
-            <div className="text-2xl font-extrabold mb-6 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
+            <div className="text-2xl font-extrabold mb-3 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
                 Room: <span className="text-[#20e07d]">{room}</span>
             </div>
 
@@ -220,13 +221,7 @@ export default function ChatUI({ room }: { room: string }) {
                     title="Send"
                     className="flex-shrink-0 p-1 rounded-full"
                 >
-                    <Image
-                        src="/send.png"
-                        width={24}
-                        height={24}
-                        alt="send"
-                        className="w-6 h-6 object-contain"
-                    />
+                    <Send/>
                 </button>
             </form>
 
