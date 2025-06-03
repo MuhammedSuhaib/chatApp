@@ -51,13 +51,14 @@ A real-time chat application built with Next.js, Firebase, and TypeScript. Featu
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-│   ├── rooms/          # Chat room pages
-│   ├── layout.tsx      # Root layout with providers
-│   └── page.tsx        # Home page
-├── components/         # React components
+├── app/               # Next.js App Router pages
+│   ├── rooms/         # Chat room pages
+│   ├── layout.tsx     # Root layout with providers
+│   └── page.tsx       # Home page
+├── components/        # React components
 │   ├── ui/            # Reusable UI components
 │   ├── Auth.tsx       # Authentication component
+|   |── AuthWrapper.tsx
 │   ├── ChatUI.tsx     # Chat interface
 │   └── Theme-provider.tsx
 └── lib/               # Utilities and actions
@@ -103,4 +104,3 @@ This app is configured for deployment on Replit. The project includes:
 5. Submit a pull request
 
 ## License
-
