@@ -128,12 +128,11 @@ export default function ChatUI({ room }: { room: string }) {
                                     {isMine && !isEditing && (
                                         <Popover>
                                             <PopoverTrigger>
-                                                <span className="cursor-pointer text-sm">⋯</span>
+                                                <PopoverContent className="w-fit">
+                                                    <button onClick={() => startEditing(msg.id, msg.text)} className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700">Edit</button>
+                                                    <button onClick={() => deleteMessage(msg.id)} className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700">Delete</button>
+                                                </PopoverContent>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-fit">
-                                                <button onClick={() => startEditing(msg.id, msg.text)} className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700">Edit</button>
-                                                <button onClick={() => deleteMessage(msg.id)} className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700">Delete</button>
-                                            </PopoverContent>
                                         </Popover>
                                     )}
                                 </div>
