@@ -116,24 +116,33 @@ export default function ChatUI({ room }: { room: string }) {
                     return (
                         <div
                             key={msg.id}
-                            className={`flex ${isMine ? "justify-end" : "justify-start"} text-gray-900 dark:text-gray-100`}
+                            className={`flex items-end space-x-2 text-gray-900 dark:text-gray-100 ${isMine ? "justify-end" : "justify-start"}`}
                         >
-                            <div className={`relative max-w-[80%] sm:max-w-[70%] p-3 rounded-xl shadow-sm ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"}`}>
-                                {/* Name + avatar + edit/delete */}
-                                <div className="flex items-center gap-3 mb-1">
-                                    <span className="font-semibold text-sm">{msg.displayName}</span>
-                                    {msg.photoURL && (
-                                        <img src={msg.photoURL} alt="avatar" className="w-6 h-6 rounded-full shadow-md" />
+                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
+
+                                <div className="mb-1">
+                                    {!isMine && msg.photoURL && (
+                                        <div className="flex  gap-3 items-center ">
+                                            <img
+                                                src={msg.photoURL}
+                                                alt="avatar"
+                                                className="size-6 rounded-full shadow-md shadow-[#8B5CF6]"
+                                            />
+                                            <span className="text-sm text-[#8B5CF6]">{msg.displayName}</span>
+                                        </div>
                                     )}
                                     {isMine && !isEditing && (
                                         <Popover>
                                             <PopoverTrigger>
                                                 {isMine && msg.photoURL && (
-                                                    <img
-                                                        src={msg.photoURL}
-                                                        alt="avatar"
-                                                        className="size-6 rounded-full border-2 border-[#20e07d]"
-                                                    />
+                                                    <div className="flex justify-end-safe gap-3 items-center ">
+                                                        <span className=" text-sm text-[#3f60f4]">{msg.displayName}</span>
+                                                        <img
+                                                            src={msg.photoURL}
+                                                            alt="avatar"
+                                                            className="size-6 rounded-full shadow-md shadow-[#3f60f4]"
+                                                        />
+                                                    </div>
                                                 )}
                                             </PopoverTrigger>
                                             <PopoverContent className="size-fit">
@@ -157,24 +166,26 @@ export default function ChatUI({ room }: { room: string }) {
                                 {isEditing ? (
                                     <>
                                         <input
-                                            className="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-600 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d]"
+                                            className="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d]"
                                             value={editingText}
-                                            onChange={(e) => setEditingText(e.target.value)}
                                             placeholder="Edit your message..."
+                                            onChange={(e) => setEditingText(e.target.value)}
                                         />
-                                        <div className="flex justify-end gap-2 mt-1 text-sm">
-                                            <button onClick={saveEdit} className="text-green-600 font-medium">Save</button>
-                                            <button onClick={cancelEdit} className="text-gray-400 font-medium">Cancel</button>
+                                        <div className="flex space-x-3 mt-2 justify-end text-sm">
+                                            <button onClick={saveEdit} className="text-green-600 hover:underline font-semibold">
+                                                Save
+                                            </button>
+                                            <button onClick={cancelEdit} className="text-gray-400 hover:underline font-semibold">
+                                                Cancel
+                                            </button>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <p className="text-sm break-words">{msg.text}</p>
-                                        {msg.createdAt && (
-                                            <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                {msg.createdAt.toLocaleTimeString()}
-                                            </span>
-                                        )}
+                                        <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>
+                                        <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            {msg.createdAt?.toLocaleTimeString()}
+                                        </span>
                                     </>
                                 )}
                             </div>
@@ -183,6 +194,8 @@ export default function ChatUI({ room }: { room: string }) {
                 })}
                 <div ref={messagesEndRef} />
             </main>
+
+
 
             {/* Chat input stuck at bottom */}
             <form
