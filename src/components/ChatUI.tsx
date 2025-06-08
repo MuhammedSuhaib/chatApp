@@ -3,7 +3,7 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { useEffect, useRef, useState } from "react";
 import { db, auth } from "@/lib/firebase";
 import {
@@ -17,64 +17,34 @@ import {
     deleteDoc,
     updateDoc,
 } from "firebase/firestore";
-import { Send } from "lucide-react"
+import { Send } from "lucide-react";
 
+type Message = {
+    id: string;
+    text: string;
+    displayName: string;
+    photoURL: string;
+    createdAt: Date | null;
+    userId?: string;
+};
 
-// ChatUI component for displaying and managing chat messages in a room
 export default function ChatUI({ room }: { room: string }) {
     const [input, setInput] = useState("");
-    const [messages, setMessages] = useState<
-        {
-            id: string;
-            text: string;
-            displayName: string;
-            photoURL: string;
-            createdAt: Date | null;
-            userId?: string;
-        }[]
-    >([]);
-
-    // Ref for scrolling to the latest message
-    const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-    // Reference to the Firestore messages subcollection for the current room
-    const messagesRef = collection(db, "rooms", room, "messages");
-    // State for editing message
+    const [messages, setMessages] = useState<Message[]>([]);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState("");
 
-    // Delete a message by id
-    const deleteMessage = async (id: string) => {
-        await deleteDoc(doc(db, "rooms", room, "messages", id));
-    };
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const messagesRef = collection(db, "rooms", room, "messages");
 
-    // Start editing a message
-    const startEditing = (id: string, currentText: string) => {
-        setEditingId(id);
-        setEditingText(currentText);
-    };
-
-    // Save the edited message
-    const saveEdit = async () => {
-        if (!editingId || !editingText.trim()) return;
-        await updateDoc(doc(db, "rooms", room, "messages", editingId), { text: editingText });
-        setEditingId(null);
-        setEditingText("");
-    };
-
-    // Cancel editing
-    const cancelEdit = () => {
-        setEditingId(null);
-        setEditingText("");
-    };
-
-    // Listen for new messages in the current room
+    // Scroll to bottom on new messages
     useEffect(() => {
-        const q = query(
-            messagesRef,
-            orderBy("createdAt")
-        );
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
+    // Subscribe to Firestore messages
+    useEffect(() => {
+        const q = query(messagesRef, orderBy("createdAt"));
         const unsub = onSnapshot(q, (snapshot) => {
             const msgs = snapshot.docs.map((doc) => {
                 const data = doc.data();
@@ -89,20 +59,12 @@ export default function ChatUI({ room }: { room: string }) {
             });
             setMessages(msgs);
         });
-
         return () => unsub();
     }, [room]);
 
-    // Scroll to the latest message when messages change
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    // Handle sending a new message
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || !auth.currentUser) return;
-
         await addDoc(messagesRef, {
             text: input,
             room,
@@ -111,63 +73,66 @@ export default function ChatUI({ room }: { room: string }) {
             displayName: auth.currentUser.displayName,
             photoURL: auth.currentUser.photoURL,
         });
-
         setInput("");
     };
 
+    const deleteMessage = async (id: string) => {
+        await deleteDoc(doc(db, "rooms", room, "messages", id));
+    };
+
+    const startEditing = (id: string, text: string) => {
+        setEditingId(id);
+        setEditingText(text);
+    };
+
+    const saveEdit = async () => {
+        if (!editingId || !editingText.trim()) return;
+        await updateDoc(doc(db, "rooms", room, "messages", editingId), {
+            text: editingText,
+        });
+        setEditingId(null);
+        setEditingText("");
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditingText("");
+    };
+
     return (
-        <div className="px-3 py-6 sm:p-6 max-w-xl mx-auto bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-white/20">
-            {/* Room title */}
-            <div className="text-2xl font-extrabold mb-3 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
+        <div className="flex flex-col max-w-xl mx-auto h-[100dvh] px-3 sm:px-6 py-4 bg-white dark:bg-neutral-900 rounded-lg shadow-lg dark:shadow-white/20">
+
+            {/* Room header */}
+            <header className="text-2xl font-extrabold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-2 mb-2">
                 Room: <span className="text-[#20e07d]">{room}</span>
-            </div>
+            </header>
 
-            {/* Messages list */}
-            <div className="space-y-4 p-4 h-96 overflow-y-auto rounded-lg shadow-inner bg-[radial-gradient(circle_at_center,_#ffffff,_#e5e7eb)] dark:bg-[radial-gradient(circle_at_center,_#1a1441,_#0d0c1d)] dark:text-white">
-
-
+            {/* Scrollable messages */}
+            <main className="flex-1 overflow-y-auto space-y-4 p-2 rounded-lg bg-gradient-to-b from-white to-gray-100 dark:from-[#1a1441] dark:to-[#0d0c1d]">
                 {messages.map((msg) => {
-                    const isMine = auth.currentUser && msg.userId === auth.currentUser.uid;
+                    const isMine = auth.currentUser?.uid === msg.userId;
                     const isEditing = editingId === msg.id;
+
                     return (
                         <div
                             key={msg.id}
-                            className={`flex items-end space-x-2 text-gray-900 dark:text-gray-100 ${isMine ? "justify-end" : "justify-start"}`}
+                            className={`flex ${isMine ? "justify-end" : "justify-start"} text-gray-900 dark:text-gray-100`}
                         >
-                            <div className={`relative max-w-[80%] sm:max-w-[70%] ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"} p-3 rounded-xl shadow-sm`}>
-                                <div className="flex justify-center gap-3 items-center mb-1">
+                            <div className={`relative max-w-[80%] sm:max-w-[70%] p-3 rounded-xl shadow-sm ${isMine ? "bg-[#20e07d]/20" : "bg-gray-200 dark:bg-neutral-700"}`}>
+                                {/* Name + avatar + edit/delete */}
+                                <div className="flex items-center gap-3 mb-1">
                                     <span className="font-semibold text-sm">{msg.displayName}</span>
-                                    {!isMine && msg.photoURL && (
-                                        <img
-                                            src={msg.photoURL}
-                                            alt="avatar"
-                                            className="size-6 rounded-full shadow-md shadow-[#208ae0]"
-                                        />
+                                    {msg.photoURL && (
+                                        <img src={msg.photoURL} alt="avatar" className="w-6 h-6 rounded-full shadow-md" />
                                     )}
                                     {isMine && !isEditing && (
                                         <Popover>
                                             <PopoverTrigger>
-                                                {isMine && msg.photoURL && (
-                                                    <img
-                                                        src={msg.photoURL}
-                                                        alt="avatar"
-                                                        className="size-6 rounded-full shadow-md shadow-[#208ae0]"
-                                                    />
-                                                )}
+                                                <span className="cursor-pointer text-sm">⋯</span>
                                             </PopoverTrigger>
-                                            <PopoverContent className="size-fit">
-                                                <button
-                                                    onClick={() => startEditing(msg.id, msg.text)}
-                                                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteMessage(msg.id)}
-                                                    className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700"
-                                                >
-                                                    Delete
-                                                </button>
+                                            <PopoverContent className="w-fit">
+                                                <button onClick={() => startEditing(msg.id, msg.text)} className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-700">Edit</button>
+                                                <button onClick={() => deleteMessage(msg.id)} className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700">Delete</button>
                                             </PopoverContent>
                                         </Popover>
                                     )}
@@ -176,26 +141,24 @@ export default function ChatUI({ room }: { room: string }) {
                                 {isEditing ? (
                                     <>
                                         <input
-                                            className="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d]"
+                                            className="w-full p-2 mt-1 rounded-md border border-gray-300 dark:border-gray-600 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d]"
                                             value={editingText}
-                                            placeholder="Edit your message..."
                                             onChange={(e) => setEditingText(e.target.value)}
+                                            placeholder="Edit your message..."
                                         />
-                                        <div className="flex space-x-3 mt-2 justify-end text-sm">
-                                            <button onClick={saveEdit} className="text-green-600 hover:underline font-semibold">
-                                                Save
-                                            </button>
-                                            <button onClick={cancelEdit} className="text-gray-400 hover:underline font-semibold">
-                                                Cancel
-                                            </button>
+                                        <div className="flex justify-end gap-2 mt-1 text-sm">
+                                            <button onClick={saveEdit} className="text-green-600 font-medium">Save</button>
+                                            <button onClick={cancelEdit} className="text-gray-400 font-medium">Cancel</button>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>
-                                        <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                            {msg.createdAt?.toLocaleTimeString()}
-                                        </span>
+                                        <p className="text-sm break-words">{msg.text}</p>
+                                        {msg.createdAt && (
+                                            <span className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                {msg.createdAt.toLocaleTimeString()}
+                                            </span>
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -203,17 +166,31 @@ export default function ChatUI({ room }: { room: string }) {
                     );
                 })}
                 <div ref={messagesEndRef} />
-            </div>
-            {/* Message input form */}
-            <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-4 w-full">
-                <input
-                    type="text"
-                    disabled={!!editingId}
-                    placeholder="Type a message..."
+            </main>
+
+            {/* Chat input stuck at bottom */}
+            <form
+                onSubmit={handleSubmit}
+                className="flex items-center gap-2 pt-2"
+            >
+                <textarea
+                    rows={1}
+                    placeholder="Type your message..."
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className="flex-grow text-sm px-3 py-2 rounded-full border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d] min-w-0"
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit(e);
+                        }
+                    }}
+                    className="flex-grow resize-none overflow-hidden text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#20e07d] max-h-[120px]"
                 />
+
                 <button
                     type="submit"
                     disabled={!!editingId}
@@ -221,11 +198,9 @@ export default function ChatUI({ room }: { room: string }) {
                     title="Send"
                     className="flex-shrink-0 p-1 rounded-full"
                 >
-                    <Send/>
+                    <Send />
                 </button>
             </form>
-
         </div>
-
     );
 }
