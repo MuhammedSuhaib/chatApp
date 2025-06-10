@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  manifest: "/manifest.json",
   title: "<ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰/>",
   description: "A PWA chat app for <ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰/>  ",
 };
@@ -28,6 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#4f46e5" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark:text-white text-black`}
       >
@@ -40,9 +46,9 @@ export default function RootLayout({
           <div className="max-w-sm mx-auto space-y-4">
             <div className="flex justify-around items-center-safe">
               <Link href="/" >
-              <span className="flex flex-wrap justify-center text-2xl font-bold tracking-wide text-center leading-tight">
+                <span className="flex flex-wrap justify-center text-2xl font-bold tracking-wide text-center leading-tight">
                   &lt;<span className="text-1xl text-purple-400">ℭʎ𝔟𝔢𝔯𝔇𝔢𝔳𝔰</span>/&gt;
-              </span>
+                </span>
               </Link>
               <UserMenu />
             </div>
